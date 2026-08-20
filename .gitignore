@@ -1,0 +1,18 @@
+# Python virtual environment
+venv/
+.venv/
+env/
+
+# Python cache / logs
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Output/temp files generated during test or runs
+stegovault_uploads/
+stegovault_output/
