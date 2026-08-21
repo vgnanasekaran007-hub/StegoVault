@@ -17,7 +17,7 @@
 // ═══════════════════════════════════════════════════════════════════════
 const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
   ? ""
-  : "https://stegovault.onrender.com";
+  : "https://stegovault-1-lh6z.onrender.com";
 
 // ═══════════════════════════════════════════════════════════════════════
 // DOM References
