@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StegoVault — Image &amp; Text Steganography</title>
+  <meta name="description" content="StegoVault lets you hide secret messages and images using LSB steganography and zero-width text encoding." />
+  <link rel="icon" type="image/svg+xml" href="/static/icons/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════ SIDEBAR ═══════════════════ -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <a href="#hero" class="sidebar-brand">
+        <svg class="brand-icon" viewBox="0 0 64 64" width="28" height="28">
+          <defs>
+            <linearGradient id="sbShield" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#22D3EE"/>
+              <stop offset="100%" stop-color="#8B5CF6"/>
+            </linearGradient>
+          </defs>
+          <path d="M32 4 L56 16 V34 C56 48 44 58 32 62 C20 58 8 48 8 34 V16 Z" fill="url(#sbShield)" opacity="0.9"/>
+          <path d="M32 10 L50 19 V34 C50 45 41 53 32 56 C23 53 14 45 14 34 V19 Z" fill="#080D1A" opacity="0.85"/>
+          <rect x="24" y="30" width="16" height="14" rx="3" fill="#22D3EE" opacity="0.9"/>
+          <path d="M26 30 V25 C26 20 38 20 38 25 V30" fill="none" stroke="#22D3EE" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="32" cy="36" r="2.5" fill="#080D1A"/>
+          <rect x="31" y="37" width="2" height="4" rx="1" fill="#080D1A"/>
+        </svg>
+        <span>StegoVault</span>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-label">Main</div>
+      <a href="#hero" class="sidebar-link active" data-section="hero">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="#text-encode" class="sidebar-link" data-section="hide-data" id="nav-hide-data">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Hide Data</span>
+      </a>
+      <a href="#text-decode" class="sidebar-link" data-section="extract-data" id="nav-extract-data">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span>Extract Data</span>
+      </a>
+
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-label">Steganography</div>
+
+      <a href="#image-steg" class="sidebar-link" data-section="image-steg">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span>Image Steg</span>
+      </a>
+      <a href="#text-steg" class="sidebar-link" data-section="text-steg">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span>Text Steg</span>
+      </a>
+      
+      <!-- Future Expandability Placeholders -->
+      <a href="#" class="sidebar-link disabled-link" onclick="return false;" style="opacity: 0.4; cursor: not-allowed;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        <span>Audio Steg <span style="font-size: 0.65rem; color: var(--text-muted); font-style: italic;">(Soon)</span></span>
+      </a>
+      <a href="#" class="sidebar-link disabled-link" onclick="return false;" style="opacity: 0.4; cursor: not-allowed;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
+        <span>Video Steg <span style="font-size: 0.65rem; color: var(--text-muted); font-style: italic;">(Soon)</span></span>
+      </a>
+    </nav>
+    <div class="sidebar-footer-hint">
+      <span class="sidebar-version">v2.1</span>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════ SIDEBAR OVERLAY (mobile) ═══════════════════ -->
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+  <!-- ═══════════════════ TOPBAR ═══════════════════ -->
+  <header id="topbar" class="topbar">
+    <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle sidebar">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <span class="topbar-title">StegoVault</span>
+  </header>
+
+  <!-- ═══════════════════ MAIN CONTENT ═══════════════════ -->
+  <main id="main-content" class="main-content">
+
+    <!-- ── HERO ── -->
+    <section id="hero" class="section hero-section">
+      <div class="hero-glow"></div>
+      <div class="container hero-inner">
+        <p class="hero-tag">🔒 Cybersecurity Steganography Suite</p>
+        <h1>Hide Messages<br /><span class="gradient-text">Inside Images &amp; Text</span></h1>
+        <p class="hero-sub">Embed secret text and images invisibly using <strong>LSB steganography</strong> and <strong>zero-width encoding</strong>. Three powerful modes in one tool.</p>
+        <div class="hero-buttons">
+          <a href="#text-encode" class="btn btn-primary" id="hero-encode-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Text → Image
+          </a>
+          <a href="#img-encode" class="btn btn-outline">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Image → Image
+          </a>
+          <a href="#txt-encode" class="btn btn-outline">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Text → Text
+          </a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><span class="stat-value">LSB</span><span class="stat-label">Algorithm</span></div>
+          <div class="stat"><span class="stat-value">PNG</span><span class="stat-label">Lossless</span></div>
+          <div class="stat"><span class="stat-value">3</span><span class="stat-label">Modes</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ IMAGE STEGANOGRAPHY SUITE ═══════════════════ -->
+    <div id="image-steg">
+
+      <!-- ── TEXT-IN-IMAGE ENCODE ── -->
+      <section id="text-encode" class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Encode</span>
+          <h2>Hide Text Inside an Image</h2>
+          <p>Upload a cover image and enter your secret text. Download the stego image with your message embedded.</p>
+        </div>
+        <div class="card glass-card">
+          <div class="card-grid">
+            <div class="card-col">
+              <label class="label">Cover Image</label>
+              <div class="dropzone" id="encode-dropzone">
+                <input type="file" id="encode-file-input" accept="image/png,image/jpeg,image/jpg" hidden />
+                <div class="dropzone-content" id="encode-dropzone-content">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="dropzone-icon"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  <p class="dropzone-text">Drag &amp; drop your image here</p>
+                  <p class="dropzone-hint">or click to browse — PNG, JPG up to 20 MB</p>
+                </div>
+                <div class="dropzone-preview hidden" id="encode-preview-wrap">
+                  <img id="encode-preview" alt="Cover image preview" />
+                  <button class="preview-remove" id="encode-remove-btn" title="Remove image">&times;</button>
+                </div>
+              </div>
+              <div class="file-info hidden" id="encode-file-info">
+                <span id="encode-file-name"></span>
+                <span id="encode-file-size"></span>
+              </div>
+              <div class="capacity-bar hidden" id="encode-capacity-wrap">
+                <div class="capacity-labels">
+                  <span>Message</span>
+                  <span><span id="encode-used-bytes">0</span> / <span id="encode-max-bytes">0</span> bytes</span>
+                </div>
+                <div class="capacity-track"><div class="capacity-fill" id="encode-capacity-fill"></div></div>
+              </div>
+            </div>
+            <div class="card-col">
+              <label class="label" for="encode-message">Secret Message</label>
+              <textarea id="encode-message" class="textarea" placeholder="Type your secret message here…" rows="8"></textarea>
+              <div class="char-count"><span id="encode-char-count">0</span> chars · <span id="encode-byte-count">0</span> bytes</div>
+              <button class="btn btn-primary btn-block" id="encode-btn" disabled>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span id="encode-btn-text">Hide Message</span>
+                <div class="spinner hidden" id="encode-spinner"></div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TEXT-IN-IMAGE DECODE ── -->
+    <section id="text-decode" class="section section-alt">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Decode</span>
+          <h2>Extract Text from Image</h2>
+          <p>Upload a stego image to reveal the secret text hidden inside.</p>
+        </div>
+        <div class="card glass-card">
+          <div class="card-grid">
+            <div class="card-col">
+              <label class="label">Stego Image</label>
+              <div class="dropzone" id="decode-dropzone">
+                <input type="file" id="decode-file-input" accept="image/png,image/jpeg,image/jpg" hidden />
+                <div class="dropzone-content" id="decode-dropzone-content">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="dropzone-icon"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  <p class="dropzone-text">Drag &amp; drop stego image here</p>
+                  <p class="dropzone-hint">or click to browse</p>
+                </div>
+                <div class="dropzone-preview hidden" id="decode-preview-wrap">
+                  <img id="decode-preview" alt="Stego image preview" />
+                  <button class="preview-remove" id="decode-remove-btn" title="Remove image">&times;</button>
+                </div>
+              </div>
+              <div class="file-info hidden" id="decode-file-info">
+                <span id="decode-file-name"></span>
+                <span id="decode-file-size"></span>
+              </div>
+            </div>
+            <div class="card-col">
+              <label class="label">Extracted Message</label>
+              <div class="result-box" id="decode-result-box">
+                <p class="result-placeholder" id="decode-placeholder">Hidden message will appear here…</p>
+                <pre class="result-text hidden" id="decode-result-text"></pre>
+              </div>
+              <div class="result-actions hidden" id="decode-result-actions">
+                <button class="btn btn-sm btn-outline" id="decode-copy-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  Copy
+                </button>
+                <button class="btn btn-sm btn-outline" id="decode-download-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Download .txt
+                </button>
+              </div>
+              <button class="btn btn-primary btn-block" id="decode-btn" disabled>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                <span id="decode-btn-text">Reveal Message</span>
+                <div class="spinner hidden" id="decode-spinner"></div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── IMAGE-IN-IMAGE ENCODE ── -->
+    <section id="img-encode" class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag tag-purple">Image Encode</span>
+          <h2>Hide an Image Inside Another Image</h2>
+          <p>Upload a large cover image and a small secret image. The secret image is compressed and embedded using LSB.</p>
+        </div>
+        <div class="card glass-card">
+          <div class="card-grid">
+            <div class="card-col">
+              <label class="label">Cover Image (large)</label>
+              <div class="dropzone" id="img-cover-dropzone">
+                <input type="file" id="img-cover-input" accept="image/png,image/jpeg,image/jpg" hidden />
+                <div class="dropzone-content" id="img-cover-content">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="dropzone-icon"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  <p class="dropzone-text">Drop cover image here</p>
+                  <p class="dropzone-hint">This image will carry the hidden image</p>
+                </div>
+                <div class="dropzone-preview hidden" id="img-cover-preview-wrap">
+                  <img id="img-cover-preview" alt="Cover preview" />
+                  <button class="preview-remove" id="img-cover-remove" title="Remove">&times;</button>
+                </div>
+              </div>
+              <div class="file-info hidden" id="img-cover-info">
+                <span id="img-cover-name"></span><span id="img-cover-size"></span>
+              </div>
+            </div>
+            <div class="card-col">
+              <label class="label">Secret Image (small)</label>
+              <div class="dropzone" id="img-secret-dropzone">
+                <input type="file" id="img-secret-input" accept="image/png,image/jpeg,image/jpg" hidden />
+                <div class="dropzone-content" id="img-secret-content">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="dropzone-icon"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                  <p class="dropzone-text">Drop secret image here</p>
+                  <p class="dropzone-hint">This image will be hidden inside the cover</p>
+                </div>
+                <div class="dropzone-preview hidden" id="img-secret-preview-wrap">
+                  <img id="img-secret-preview" alt="Secret preview" />
+                  <button class="preview-remove" id="img-secret-remove" title="Remove">&times;</button>
+                </div>
+              </div>
+              <div class="file-info hidden" id="img-secret-info">
+                <span id="img-secret-name"></span><span id="img-secret-size"></span>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-block mt-20" id="img-encode-btn" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span id="img-encode-btn-text">Hide Image</span>
+            <div class="spinner hidden" id="img-encode-spinner"></div>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── IMAGE-IN-IMAGE DECODE ── -->
+    <section id="img-decode" class="section section-alt">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag tag-purple">Image Decode</span>
+          <h2>Extract Hidden Image</h2>
+          <p>Upload a stego image to reveal and download the secret image hidden inside.</p>
+        </div>
+        <div class="card glass-card">
+          <div class="card-grid">
+            <div class="card-col">
+              <label class="label">Stego Image</label>
+              <div class="dropzone" id="imgd-dropzone">
+                <input type="file" id="imgd-file-input" accept="image/png,image/jpeg,image/jpg" hidden />
+                <div class="dropzone-content" id="imgd-dropzone-content">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="dropzone-icon"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  <p class="dropzone-text">Drop stego image here</p>
+                  <p class="dropzone-hint">Image containing a hidden image</p>
+                </div>
+                <div class="dropzone-preview hidden" id="imgd-preview-wrap">
+                  <img id="imgd-preview" alt="Stego preview" />
+                  <button class="preview-remove" id="imgd-remove-btn" title="Remove">&times;</button>
+                </div>
+              </div>
+              <div class="file-info hidden" id="imgd-file-info">
+                <span id="imgd-file-name"></span><span id="imgd-file-size"></span>
+              </div>
+            </div>
+            <div class="card-col">
+              <label class="label">Extracted Secret Image</label>
+              <div class="result-image-box" id="imgd-result-box">
+                <p class="result-placeholder" id="imgd-placeholder">Hidden image will appear here…</p>
+                <img class="result-image hidden" id="imgd-result-img" alt="Extracted secret image" />
+              </div>
+              <div class="result-actions hidden" id="imgd-result-actions">
+                <button class="btn btn-sm btn-outline" id="imgd-download-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Download Image
+                </button>
+              </div>
+              <button class="btn btn-primary btn-block" id="imgd-decode-btn" disabled>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                <span id="imgd-decode-btn-text">Reveal Image</span>
+                <div class="spinner hidden" id="imgd-decode-spinner"></div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    </div> <!-- End of #image-steg -->
+
+    <!-- ═══════════════════ TEXT STEGANOGRAPHY SUITE ═══════════════════ -->
+    <div id="text-steg">
+
+      <!-- ── TEXT-IN-TEXT ENCODE ── -->
+      <section id="txt-encode" class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag tag-rose">Text Encode</span>
+          <h2>Hide Text Inside Text</h2>
+          <p>Embed a secret message within innocent-looking cover text using invisible zero-width Unicode characters.</p>
+        </div>
+        <div class="card glass-card">
+          <div class="card-grid">
+            <div class="card-col">
+              <label class="label" for="txt-cover-input">Cover Text</label>
+              <textarea id="txt-cover-input" class="textarea" placeholder="Enter innocent-looking cover text…&#10;e.g. 'The weather is nice today.'" rows="6"></textarea>
+              <label class="label mt-16" for="txt-secret-input">Secret Message</label>
+              <textarea id="txt-secret-input" class="textarea" placeholder="Enter the secret message to hide…" rows="4"></textarea>
+            </div>
+            <div class="card-col">
+              <label class="label">Stego Text (with hidden data)</label>
+              <div class="result-box" id="txt-encode-result-box">
+                <p class="result-placeholder" id="txt-encode-placeholder">Encoded text will appear here…</p>
+                <pre class="result-text hidden" id="txt-encode-result"></pre>
+              </div>
+              <div class="result-actions hidden" id="txt-encode-actions">
+                <button class="btn btn-sm btn-outline" id="txt-encode-copy">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  Copy Stego Text
+                </button>
+              </div>
+              <button class="btn btn-primary btn-block" id="txt-encode-btn" disabled>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span id="txt-encode-btn-text">Hide in Text</span>
+                <div class="spinner hidden" id="txt-encode-spinner"></div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TEXT-IN-TEXT DECODE ── -->
+    <section id="txt-decode" class="section section-alt">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag tag-rose">Text Decode</span>
+          <h2>Extract Text from Text</h2>
+          <p>Paste stego text containing zero-width characters to reveal the hidden message.</p>
+        </div>
+        <div class="card glass-card">
+          <div class="card-grid">
+            <div class="card-col">
+              <label class="label" for="txt-decode-input">Stego Text</label>
+              <textarea id="txt-decode-input" class="textarea" placeholder="Paste the stego text here…" rows="8"></textarea>
+            </div>
+            <div class="card-col">
+              <label class="label">Extracted Secret</label>
+              <div class="result-box" id="txt-decode-result-box">
+                <p class="result-placeholder" id="txt-decode-placeholder">Hidden message will appear here…</p>
+                <pre class="result-text hidden" id="txt-decode-result"></pre>
+              </div>
+              <div class="result-actions hidden" id="txt-decode-actions">
+                <button class="btn btn-sm btn-outline" id="txt-decode-copy">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  Copy
+                </button>
+              </div>
+              <button class="btn btn-primary btn-block" id="txt-decode-btn" disabled>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                <span id="txt-decode-btn-text">Reveal Message</span>
+                <div class="spinner hidden" id="txt-decode-spinner"></div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    </div> <!-- End of #text-steg -->
+
+    <!-- ═══════════════════ FOOTER ═══════════════════ -->
+    <footer id="footer" class="footer">
+      <div class="container footer-inner">
+        <div class="footer-brand">
+          <svg viewBox="0 0 64 64" width="24" height="24">
+            <defs>
+              <linearGradient id="fShield" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#22D3EE"/>
+                <stop offset="100%" stop-color="#8B5CF6"/>
+              </linearGradient>
+            </defs>
+            <path d="M32 4 L56 16 V34 C56 48 44 58 32 62 C20 58 8 48 8 34 V16 Z" fill="url(#fShield)" opacity="0.9"/>
+          </svg>
+          <span>StegoVault</span>
+        </div>
+        <div class="footer-author">
+          <p>Made by <strong>Gnanasekaran V</strong></p>
+          <div class="footer-social">
+            <a href="mailto:v.gnanasekaran007@gmail.com" title="Email" class="social-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <span>v.gnanasekaran007@gmail.com</span>
+            </a>
+            <a href="https://github.com/vgnanasekaran007-hub" target="_blank" rel="noopener noreferrer" title="GitHub" class="social-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              <span>vgnanasekaran007-hub</span>
+            </a>
+          </div>
+        </div>
+        <p class="footer-copy">&copy; 2026 StegoVault — Cybersecurity Project</p>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- ═══════════════════ TOAST CONTAINER ═══════════════════ -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

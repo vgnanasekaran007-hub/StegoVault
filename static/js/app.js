@@ -12,6 +12,14 @@
  */
 
 // ═══════════════════════════════════════════════════════════════════════
+// API Base URL — auto-detect local vs deployed
+// Change "YOUR_RENDER_URL" to your actual Render service URL
+// ═══════════════════════════════════════════════════════════════════════
+const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+  ? ""
+  : "https://stegovault.onrender.com";
+
+// ═══════════════════════════════════════════════════════════════════════
 // DOM References
 // ═══════════════════════════════════════════════════════════════════════
 
@@ -393,7 +401,7 @@ encodeBtn.addEventListener("click", async () => {
   fd.append("message", encodeMessage.value);
 
   try {
-    const res = await fetch("/api/encode", { method: "POST", body: fd });
+    const res = await fetch(`${API_BASE}/api/encode`, { method: "POST", body: fd });
     if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
     const blob = await res.blob();
     const a = document.createElement("a");
@@ -449,7 +457,7 @@ decodeBtn.addEventListener("click", async () => {
   fd.append("image", decodeFile);
 
   try {
-    const res = await fetch("/api/decode", { method: "POST", body: fd });
+    const res = await fetch(`${API_BASE}/api/decode`, { method: "POST", body: fd });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
     decodeResultText.textContent = data.message;
@@ -548,7 +556,7 @@ imgEncodeBtn.addEventListener("click", async () => {
   fd.append("secret", imgSecretFile);
 
   try {
-    const res = await fetch("/api/encode-image", { method: "POST", body: fd });
+    const res = await fetch(`${API_BASE}/api/encode-image`, { method: "POST", body: fd });
     if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
     const blob = await res.blob();
     const a = document.createElement("a");
@@ -605,7 +613,7 @@ imgdDecodeBtn.addEventListener("click", async () => {
   fd.append("image", imgdFile);
 
   try {
-    const res = await fetch("/api/decode-image", { method: "POST", body: fd });
+    const res = await fetch(`${API_BASE}/api/decode-image`, { method: "POST", body: fd });
     if (!res.ok) {
       // Try to parse JSON error
       const text = await res.text();
@@ -664,7 +672,7 @@ txtEncodeBtn.addEventListener("click", async () => {
   txtEncodeSpinner.classList.remove("hidden");
 
   try {
-    const res = await fetch("/api/encode-text", {
+    const res = await fetch(`${API_BASE}/api/encode-text`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ cover_text: cover, secret_message: secret }),
@@ -710,7 +718,7 @@ txtDecodeBtn.addEventListener("click", async () => {
   txtDecodeSpinner.classList.remove("hidden");
 
   try {
-    const res = await fetch("/api/decode-text", {
+    const res = await fetch(`${API_BASE}/api/decode-text`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ stego_text: text }),

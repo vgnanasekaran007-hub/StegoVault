@@ -16,6 +16,7 @@ import os
 import uuid
 import tempfile
 from flask import Flask, render_template, request, jsonify, send_file
+from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from PIL import Image
 
@@ -30,6 +31,7 @@ ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
 MAX_FILE_SIZE = 20 * 1024 * 1024  # 20 MB
 
 app = Flask(__name__)
+CORS(app)
 app.config["MAX_CONTENT_LENGTH"] = MAX_FILE_SIZE
 
 # Temp directories for uploads and outputs
