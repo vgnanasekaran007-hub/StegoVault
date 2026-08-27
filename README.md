@@ -1,3 +1,5 @@
+<div align="center">
+
 # 🛡️ StegoVault — Client-Side Steganography Suite
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-22D3EE?style=for-the-badge&logo=vercel&logoColor=white)](https://stego-vault-navy.vercel.app/)
@@ -7,12 +9,12 @@
 
 > **StegoVault** is a zero-backend, client-side cybersecurity application designed to securely hide and extract confidential payloads using advanced steganography algorithms directly within your browser.
 
-<div align="center">
     
-### 🌐 [View Live Project](https://stego-vault-navy.vercel.app//) 🌐
-<div >
+ ### 🌐 [View Live Project](https://stego-vault-navy.vercel.app//) 🌐  
 
-    
+</div> 
+
+
 ---
 
 ## 🌟 Key Features
@@ -117,3 +119,16 @@ StegoVault was developed for cybersecurity educational purposes and steganograph
 
 Contributions, issues, and feature requests are welcome!
 Licensed under the Educational / MIT License.
+
+<div align="center">
+
+## 👨‍💻 Developed by
+
+**Gnanasekaran V**
+
+[![GitHub](https://img.shields.io/badge/GitHub-vgnanasekaran007--hub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/vgnanasekaran007-hub)
+[![Gmail](https://img.shields.io/badge/Gmail-vgnanasekaran007%40gmail.com-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:vgnanasekaran007@gmail.com)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-meta--shield--eight.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://meta-shield-eight.vercel.app/)
+
+---
+
