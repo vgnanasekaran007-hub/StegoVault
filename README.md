@@ -1,117 +1,115 @@
-# StegoVault — Image & Text Steganography
+# 🛡️ StegoVault — Client-Side Steganography Suite
 
-A full-stack web application that hides secret messages inside images using **LSB (Least Significant Bit) steganography**. Built as a college cybersecurity project.
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-22D3EE?style=for-the-badge&logo=vercel&logoColor=white)](https://stego-vault-navy.vercel.app/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![HTML5](https://img.shields.io/badge/HTML5-Custom-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
+[![CSS3](https://img.shields.io/badge/CSS3-Cyberpunk%20Glass-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
 
-![Python](https://img.shields.io/badge/Python-3.8+-3776ab?style=flat&logo=python&logoColor=white)
-![Flask](https://img.shields.io/badge/Flask-3.0+-000000?style=flat&logo=flask&logoColor=white)
-![License](https://img.shields.io/badge/License-Educational-blueviolet)
+> **StegoVault** is a zero-backend, client-side cybersecurity application designed to securely hide and extract confidential payloads using advanced steganography algorithms directly within your browser.
+
+🔗 **Live Application:** [https://stego-vault-navy.vercel.app/](https://stego-vault-navy.vercel.app/)
 
 ---
 
-## Features
+## 🌟 Key Features
 
-- **Encode** — Hide secret text inside any PNG/JPG image
-- **Decode** — Extract hidden text from a stego image
-- **Drag & Drop** — Upload images easily
-- **Capacity Check** — See how much text your image can hold
-- **Lossless Output** — Stego images saved as PNG
-- **Responsive UI** — Works on desktop, tablet, and mobile
-- **Security** — File validation, safe filenames, path traversal protection
+StegoVault provides 3 distinct modes of steganography:
 
-## Tech Stack
+### 1. 🖼️ Text-in-Image Steganography (LSB)
+- **Hide Secret Text:** Encodes UTF-8 messages directly into the Least Significant Bits (LSB) of cover image RGB channels.
+- **Extract Text:** Instantly extracts concealed messages from stego images containing the `STGV1337` signature.
+- **Capacity Indicator:** Real-time calculation of available payload bytes per image based on pixel resolution.
 
-| Layer      | Technology        |
-|------------|-------------------|
-| Frontend   | HTML5, CSS3, JS   |
-| Backend    | Python + Flask    |
-| Processing | Pillow (PIL)      |
-| API        | REST (JSON + File)|
+### 2. 📸 Image-in-Image Steganography (LSB + Compression)
+- **Covert Image Carrier:** Embeds a secondary secret image inside a primary cover image using LSB manipulation.
+- **Fast Compression:** Integrates `pako` (zlib compression) to maximize embedding density and support high-resolution payloads.
+- **Lossless Extraction:** Reconstructs the exact hidden PNG secret image without quality degradation.
 
-## Project Structure
+### 3. 📝 Text-in-Text Steganography (Zero-Width Unicode)
+- **Invisible Payload:** Hides secret text inside normal cover text using invisible Zero-Width Unicode characters (`U+200B`, `U+200C`, `U+200D`, `U+FEFF`).
+- **Stealth Messaging:** Secret data remains 100% invisible to human eyes across chat apps, emails, and social media.
 
-```
+---
+
+## ⚡ 100% Client-Side Architecture
+
+StegoVault runs entirely inside the user's browser using HTML5 Canvas API and Web APIs. 
+
+* 🔒 **Maximum Privacy:** Your files and secret data **never** leave your machine or upload to any server.
+* 🚀 **Zero Latency:** Processing happens instantly with no server roundtrips or cold starts.
+* 🌐 **Serverless Deployment:** Deployed easily on static hosts like Vercel, Netlify, or GitHub Pages.
+
+---
+
+## 🛠️ Technology Stack
+
+* **Frontend:** HTML5, Vanilla CSS3 (Custom Dark Cybersecurity Glassmorphism), Vanilla JavaScript (ES6+)
+* **Engine:** Canvas API (ImageData / LSB bitwise operations), Web TextEncoder API
+* **Compression:** [Pako.js](https://github.com/nodeca/pako) (Browser zlib implementation)
+* **Deployment:** Vercel Static Hosting
+
+---
+
+## 📁 Repository Structure
+
+```text
 stegovault/
-├── app.py                    # Flask backend server
-├── requirements.txt          # Python dependencies
-├── README.md                 # This file
-├── steganography/
-│   ├── __init__.py
-│   └── lsb.py                # LSB steganography engine
-├── templates/
-│   └── index.html            # Frontend SPA
-└── static/
-    ├── css/style.css          # Stylesheet
-    ├── js/app.js              # Frontend logic
-    └── icons/favicon.svg      # Custom favicon
+├── index.html                # Main SPA Landing Page
+├── README.md                 # Project Documentation
+├── static/
+│   ├── css/
+│   │   └── style.css         # Dark Cybersecurity Theme & Components
+│   ├── js/
+│   │   ├── stego.js          # Core Client-Side Steganography Engine
+│   │   └── app.js            # UI Event Handlers, Drag-and-Drop & Rendering
+│   └── icons/
+│       └── favicon.svg       # Custom Vector Logo
+└── templates/
+    └── index.html            # Template Backup
 ```
 
-## Installation
+---
 
-```bash
-# Clone / navigate to the project
-cd stegovault
+## 💻 Local Quickstart
 
-# Install Python dependencies
-pip install -r requirements.txt
+No dependencies or node servers required!
 
-# Run the server
-python app.py
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-username/stegovault.git
+   cd stegovault
+   ```
+
+2. **Run locally:**
+   Open `index.html` directly in any web browser, or serve with standard static server:
+   ```bash
+   python3 -m http.server 8000
+   ```
+
+3. **Open Browser:**
+   Navigate to `http://localhost:8000`.
+
+---
+
+## 🔬 Technical Payload Specifications
+
+### LSB Image Format
+```text
+[ MAGIC_HEADER (8 Bytes) ] [ TYPE (1 Byte) ] [ LENGTH (4 Bytes) ] [ PAYLOAD (Variable) ]
 ```
+* **MAGIC_HEADER:** `STGV1337` (used to verify stego image integrity)
+* **TYPE:** `0x01` (Text), `0x02` (Compressed Image)
+* **LENGTH:** Big-endian 32-bit unsigned integer
 
-Open **http://localhost:5000** in your browser.
+---
 
-## API Endpoints
+## 📜 Educational Disclaimer
 
-| Method | Endpoint       | Description                        |
-|--------|----------------|------------------------------------|
-| GET    | `/`            | Serves the frontend                |
-| POST   | `/api/encode`  | Hides text in image (returns PNG)  |
-| POST   | `/api/decode`  | Extracts text from stego image     |
-| GET    | `/health`      | Health check                       |
+StegoVault was developed for cybersecurity educational purposes and steganographic research. Stego images generated must be stored in lossless formats (PNG) because lossy compression (JPEG, WEBP) will destroy hidden LSB data bits.
 
-### Encode Request
+---
 
-```
-POST /api/encode
-Content-Type: multipart/form-data
+## 🤝 Contributing & License
 
-Fields:
-  image   — PNG/JPG file
-  message — Secret text to hide
-```
-
-### Decode Request
-
-```
-POST /api/decode
-Content-Type: multipart/form-data
-
-Fields:
-  image — Stego PNG file
-```
-
-## How LSB Works
-
-1. Convert the secret message to binary (UTF-8 → bits)
-2. Read each pixel's R, G, B channels
-3. Replace the **least significant bit** of each channel with a message bit
-4. Save as lossless PNG — the image looks identical to the original
-
-### Payload Format
-
-```
-[MAGIC: 8 bytes] [LENGTH: 4 bytes] [MESSAGE: variable]
-```
-
-The magic header (`STGV1337`) identifies stego images. The length prefix ensures exact extraction.
-
-## Limitations
-
-- Only supports PNG output (JPEG is lossy and destroys hidden data)
-- Message capacity depends on image dimensions (width × height × 3 bits)
-- No encryption — the hidden text is in plaintext (combine with encryption for real security)
-- For educational/demonstration purposes only
-
-## License
-
-Educational project — for learning purposes only.
+Contributions, issues, and feature requests are welcome!
+Licensed under the Educational / MIT License.
