@@ -1,23 +1,18 @@
 /**
- * StegoVault — Frontend Application Logic v2.0
+ * StegoVault — Frontend Application Logic v3.0 (Client-Side Only)
+ *
+ * All steganography processing runs directly in the browser.
+ * No backend / API calls required. Uses StegoEngine from stego.js.
  *
  * Handles:
  *  - Sidebar navigation (open/close)
- *  - Text-in-Image encode/decode
- *  - Image-in-Image encode/decode
- *  - Text-in-Text encode/decode
+ *  - Text-in-Image encode/decode  (Canvas + LSB)
+ *  - Image-in-Image encode/decode (Canvas + LSB + pako)
+ *  - Text-in-Text encode/decode   (Zero-width chars)
  *  - Drag & drop, previews, capacity tracking
  *  - Toast notifications, loading states
  *  - Copy and download actions
  */
-
-// ═══════════════════════════════════════════════════════════════════════
-// API Base URL — auto-detect local vs deployed
-// Change "YOUR_RENDER_URL" to your actual Render service URL
-// ═══════════════════════════════════════════════════════════════════════
-const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-  ? ""
-  : "https://stegovault-1-lh6z.onrender.com";
 
 // ═══════════════════════════════════════════════════════════════════════
 // DOM References
@@ -199,81 +194,42 @@ function closeSidebar() {
 sidebarToggle.addEventListener("click", toggleSidebar);
 sidebarOverlay.addEventListener("click", closeSidebar);
 
-// Close sidebar on link click (mobile) and update active state
 sidebarLinks.forEach(link => {
   link.addEventListener("click", () => {
-    // Close on mobile
-    if (window.innerWidth < 1024) {
-      closeSidebar();
-    }
+    if (window.innerWidth < 1024) closeSidebar();
   });
 });
 
 // Active link tracking on scroll
 window.addEventListener("scroll", () => {
   const scrollY = window.scrollY + 120;
-  
-  // Elements
   const heroSec = document.getElementById("hero");
   const imgStegSec = document.getElementById("image-steg");
   const txtStegSec = document.getElementById("text-steg");
-  
   if (!heroSec || !imgStegSec || !txtStegSec) return;
 
   const heroTop = heroSec.offsetTop - 80;
   const heroBottom = heroTop + heroSec.offsetHeight;
-
   const imgStegTop = imgStegSec.offsetTop - 80;
   const imgStegBottom = imgStegTop + imgStegSec.offsetHeight;
-
   const txtStegTop = txtStegSec.offsetTop - 80;
   const txtStegBottom = txtStegTop + txtStegSec.offsetHeight;
 
-  // Check if scroll is over any encode tool
-  const encodeSecs = [
-    document.getElementById("text-encode"),
-    document.getElementById("img-encode"),
-    document.getElementById("txt-encode")
-  ];
+  const encodeSecs = ["text-encode", "img-encode", "txt-encode"].map(id => document.getElementById(id));
   let isEncodingActive = false;
-  encodeSecs.forEach(sec => {
-    if (!sec) return;
-    const top = sec.offsetTop - 80;
-    const bottom = top + sec.offsetHeight;
-    if (scrollY >= top && scrollY < bottom) {
-      isEncodingActive = true;
-    }
-  });
+  encodeSecs.forEach(sec => { if (!sec) return; const t = sec.offsetTop - 80; if (scrollY >= t && scrollY < t + sec.offsetHeight) isEncodingActive = true; });
 
-  // Check if scroll is over any decode tool
-  const decodeSecs = [
-    document.getElementById("text-decode"),
-    document.getElementById("img-decode"),
-    document.getElementById("txt-decode")
-  ];
+  const decodeSecs = ["text-decode", "img-decode", "txt-decode"].map(id => document.getElementById(id));
   let isDecodingActive = false;
-  decodeSecs.forEach(sec => {
-    if (!sec) return;
-    const top = sec.offsetTop - 80;
-    const bottom = top + sec.offsetHeight;
-    if (scrollY >= top && scrollY < bottom) {
-      isDecodingActive = true;
-    }
-  });
+  decodeSecs.forEach(sec => { if (!sec) return; const t = sec.offsetTop - 80; if (scrollY >= t && scrollY < t + sec.offsetHeight) isDecodingActive = true; });
 
   sidebarLinks.forEach(link => {
-    const section = link.getAttribute("data-section");
-    if (section === "hero") {
-      link.classList.toggle("active", scrollY >= heroTop && scrollY < heroBottom);
-    } else if (section === "image-steg") {
-      link.classList.toggle("active", scrollY >= imgStegTop && scrollY < imgStegBottom);
-    } else if (section === "text-steg") {
-      link.classList.toggle("active", scrollY >= txtStegTop && scrollY < txtStegBottom);
-    } else if (section === "hide-data") {
-      link.classList.toggle("active", isEncodingActive);
-    } else if (section === "extract-data") {
-      link.classList.toggle("active", isDecodingActive);
-    }
+    const s = link.getAttribute("data-section");
+    if (s === "hero") link.classList.toggle("active", scrollY >= heroTop && scrollY < heroBottom);
+    else if (s === "image-steg") link.classList.toggle("active", scrollY >= imgStegTop && scrollY < imgStegBottom);
+    else if (s === "text-steg") link.classList.toggle("active", scrollY >= txtStegTop && scrollY < txtStegBottom);
+    else if (s === "hide-data") link.classList.toggle("active", isEncodingActive);
+    else if (s === "extract-data") link.classList.toggle("active", isDecodingActive);
   });
 });
 
@@ -281,10 +237,7 @@ window.addEventListener("scroll", () => {
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener("click", (e) => {
     const target = document.querySelector(anchor.getAttribute("href"));
-    if (target) {
-      e.preventDefault();
-      target.scrollIntoView({ behavior: "smooth" });
-    }
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: "smooth" }); }
   });
 });
 
@@ -294,19 +247,10 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // ═══════════════════════════════════════════════════════════════════════
 
 function setupDropzone(dropzone, fileInput, onFile) {
-  dropzone.addEventListener("click", (e) => {
-    if (e.target.closest(".preview-remove")) return;
-    fileInput.click();
-  });
-  fileInput.addEventListener("change", () => {
-    if (fileInput.files.length) onFile(fileInput.files[0]);
-  });
-  dropzone.addEventListener("dragover", (e) => {
-    e.preventDefault(); dropzone.classList.add("drag-over");
-  });
-  dropzone.addEventListener("dragleave", () => {
-    dropzone.classList.remove("drag-over");
-  });
+  dropzone.addEventListener("click", (e) => { if (e.target.closest(".preview-remove")) return; fileInput.click(); });
+  fileInput.addEventListener("change", () => { if (fileInput.files.length) onFile(fileInput.files[0]); });
+  dropzone.addEventListener("dragover", (e) => { e.preventDefault(); dropzone.classList.add("drag-over"); });
+  dropzone.addEventListener("dragleave", () => { dropzone.classList.remove("drag-over"); });
   dropzone.addEventListener("drop", (e) => {
     e.preventDefault(); dropzone.classList.remove("drag-over");
     if (e.dataTransfer.files.length) onFile(e.dataTransfer.files[0]);
@@ -317,9 +261,7 @@ function calcCapacityFromFile(file) {
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => {
-      const totalBits = img.width * img.height * 3;
-      const overheadBits = (8 * 8) + 8 + 32; // magic + type + length
-      resolve(Math.max(0, Math.floor((totalBits - overheadBits) / 8)));
+      resolve(StegoEngine.calculateCapacity(img.width, img.height));
     };
     img.onerror = () => resolve(0);
     img.src = URL.createObjectURL(file);
@@ -327,20 +269,14 @@ function calcCapacityFromFile(file) {
 }
 
 function validateFile(file) {
-  if (!isValidImage(file)) {
-    showToast("Please upload a PNG, JPG, or JPEG image.", "error");
-    return false;
-  }
-  if (file.size > 20 * 1024 * 1024) {
-    showToast("File too large. Max 20 MB.", "error");
-    return false;
-  }
+  if (!isValidImage(file)) { showToast("Please upload a PNG, JPG, or JPEG image.", "error"); return false; }
+  if (file.size > 20 * 1024 * 1024) { showToast("File too large. Max 20 MB.", "error"); return false; }
   return true;
 }
 
 
 // ═══════════════════════════════════════════════════════════════════════
-// TEXT-IN-IMAGE ENCODE
+// TEXT-IN-IMAGE ENCODE (Client-Side)
 // ═══════════════════════════════════════════════════════════════════════
 
 function handleEncodeFile(file) {
@@ -352,7 +288,6 @@ function handleEncodeFile(file) {
   encodeFileName.textContent = file.name;
   encodeFileSize.textContent = formatBytes(file.size);
   encodeFileInfo.classList.remove("hidden");
-
   calcCapacityFromFile(file).then((cap) => {
     encodeCapacity = cap;
     encodeMaxBytes.textContent = cap.toLocaleString();
@@ -396,14 +331,8 @@ encodeBtn.addEventListener("click", async () => {
   encodeBtnText.textContent = "Encoding…";
   encodeSpinner.classList.remove("hidden");
 
-  const fd = new FormData();
-  fd.append("image", encodeFile);
-  fd.append("message", encodeMessage.value);
-
   try {
-    const res = await fetch(`${API_BASE}/api/encode`, { method: "POST", body: fd });
-    if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
-    const blob = await res.blob();
+    const blob = await StegoEngine.encodeTextInImage(encodeFile, encodeMessage.value);
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "stegovault_encoded.png";
@@ -415,7 +344,7 @@ encodeBtn.addEventListener("click", async () => {
 
 
 // ═══════════════════════════════════════════════════════════════════════
-// TEXT-IN-IMAGE DECODE
+// TEXT-IN-IMAGE DECODE (Client-Side)
 // ═══════════════════════════════════════════════════════════════════════
 
 function handleDecodeFile(file) {
@@ -453,18 +382,13 @@ decodeBtn.addEventListener("click", async () => {
   decodeBtnText.textContent = "Decoding…";
   decodeSpinner.classList.remove("hidden");
 
-  const fd = new FormData();
-  fd.append("image", decodeFile);
-
   try {
-    const res = await fetch(`${API_BASE}/api/decode`, { method: "POST", body: fd });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error);
-    decodeResultText.textContent = data.message;
+    const { message, byteSize } = await StegoEngine.decodeTextFromImage(decodeFile);
+    decodeResultText.textContent = message;
     decodePlaceholder.classList.add("hidden");
     decodeResultText.classList.remove("hidden");
     decodeResultActions.classList.remove("hidden");
-    showToast(`Message extracted! (${data.byte_size} bytes)`, "success");
+    showToast(`Message extracted! (${byteSize} bytes)`, "success");
   } catch (err) {
     showToast(err.message, "error");
     decodePlaceholder.classList.remove("hidden");
@@ -493,7 +417,7 @@ decodeDownloadBtn.addEventListener("click", () => {
 
 
 // ═══════════════════════════════════════════════════════════════════════
-// IMAGE-IN-IMAGE ENCODE
+// IMAGE-IN-IMAGE ENCODE (Client-Side)
 // ═══════════════════════════════════════════════════════════════════════
 
 function handleImgCover(file) {
@@ -551,14 +475,8 @@ imgEncodeBtn.addEventListener("click", async () => {
   imgEncodeBtnText.textContent = "Encoding…";
   imgEncodeSpinner.classList.remove("hidden");
 
-  const fd = new FormData();
-  fd.append("cover", imgCoverFile);
-  fd.append("secret", imgSecretFile);
-
   try {
-    const res = await fetch(`${API_BASE}/api/encode-image`, { method: "POST", body: fd });
-    if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
-    const blob = await res.blob();
+    const blob = await StegoEngine.encodeImageInImage(imgCoverFile, imgSecretFile);
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "stegovault_image_encoded.png";
@@ -570,7 +488,7 @@ imgEncodeBtn.addEventListener("click", async () => {
 
 
 // ═══════════════════════════════════════════════════════════════════════
-// IMAGE-IN-IMAGE DECODE
+// IMAGE-IN-IMAGE DECODE (Client-Side)
 // ═══════════════════════════════════════════════════════════════════════
 
 let imgdBlobUrl = null;
@@ -609,19 +527,8 @@ imgdDecodeBtn.addEventListener("click", async () => {
   imgdDecodeBtnText.textContent = "Decoding…";
   imgdDecodeSpinner.classList.remove("hidden");
 
-  const fd = new FormData();
-  fd.append("image", imgdFile);
-
   try {
-    const res = await fetch(`${API_BASE}/api/decode-image`, { method: "POST", body: fd });
-    if (!res.ok) {
-      // Try to parse JSON error
-      const text = await res.text();
-      let errMsg = "Decoding failed.";
-      try { errMsg = JSON.parse(text).error; } catch {}
-      throw new Error(errMsg);
-    }
-    const blob = await res.blob();
+    const blob = await StegoEngine.decodeImageFromImage(imgdFile);
     if (imgdBlobUrl) URL.revokeObjectURL(imgdBlobUrl);
     imgdBlobUrl = URL.createObjectURL(blob);
     imgdResultImg.src = imgdBlobUrl;
@@ -652,7 +559,7 @@ imgdDownloadBtn.addEventListener("click", () => {
 
 
 // ═══════════════════════════════════════════════════════════════════════
-// TEXT-IN-TEXT ENCODE
+// TEXT-IN-TEXT ENCODE (Client-Side)
 // ═══════════════════════════════════════════════════════════════════════
 
 function updateTxtEncodeState() {
@@ -672,19 +579,12 @@ txtEncodeBtn.addEventListener("click", async () => {
   txtEncodeSpinner.classList.remove("hidden");
 
   try {
-    const res = await fetch(`${API_BASE}/api/encode-text`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cover_text: cover, secret_message: secret }),
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error);
-
-    txtEncodeResult.textContent = data.stego_text;
+    const { stegoText, hiddenBytes } = StegoEngine.encodeTextInText(cover, secret);
+    txtEncodeResult.textContent = stegoText;
     txtEncodePlc.classList.add("hidden");
     txtEncodeResult.classList.remove("hidden");
     txtEncodeActions.classList.remove("hidden");
-    showToast(`Secret hidden in text! (${data.hidden_bytes} bytes)`, "success");
+    showToast(`Secret hidden in text! (${hiddenBytes} bytes)`, "success");
   } catch (err) { showToast(err.message, "error"); }
   finally {
     txtEncodeBtnText.textContent = "Hide in Text";
@@ -700,7 +600,7 @@ txtEncodeCopy.addEventListener("click", async () => {
 
 
 // ═══════════════════════════════════════════════════════════════════════
-// TEXT-IN-TEXT DECODE
+// TEXT-IN-TEXT DECODE (Client-Side)
 // ═══════════════════════════════════════════════════════════════════════
 
 function updateTxtDecodeState() {
@@ -718,19 +618,12 @@ txtDecodeBtn.addEventListener("click", async () => {
   txtDecodeSpinner.classList.remove("hidden");
 
   try {
-    const res = await fetch(`${API_BASE}/api/decode-text`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ stego_text: text }),
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error);
-
-    txtDecodeResult.textContent = data.message;
+    const { message, byteSize } = StegoEngine.decodeTextFromText(text);
+    txtDecodeResult.textContent = message;
     txtDecodePlc.classList.add("hidden");
     txtDecodeResult.classList.remove("hidden");
     txtDecodeActions.classList.remove("hidden");
-    showToast(`Secret extracted! (${data.byte_size} bytes)`, "success");
+    showToast(`Secret extracted! (${byteSize} bytes)`, "success");
   } catch (err) {
     showToast(err.message, "error");
     txtDecodePlc.classList.remove("hidden");
