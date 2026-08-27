@@ -7,9 +7,12 @@
 
 > **StegoVault** is a zero-backend, client-side cybersecurity application designed to securely hide and extract confidential payloads using advanced steganography algorithms directly within your browser.
 
-
+<div align="center">
+    
 ### 🌐 [View Live Project](https://stego-vault-navy.vercel.app//) 🌐
+<div >
 
+    
 ---
 
 ## 🌟 Key Features
