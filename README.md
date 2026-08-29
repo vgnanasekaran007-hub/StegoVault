@@ -118,7 +118,7 @@ StegoVault was developed for cybersecurity educational purposes and steganograph
 ## 🤝 Contributing & License
 
 Contributions, issues, and feature requests are welcome!
-Licensed under the Educational / MIT License.
+Licensed under the Educational /
 
 <div align="center">
 
