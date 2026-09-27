@@ -129,7 +129,7 @@ Licensed under the Educational /
 [![Gmail](https://img.shields.io/badge/Gmail-vgnanasekaran007%40gmail.com-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:vgnanasekaran007@gmail.com)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-meta--shield--eight.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://meta-shield-eight.vercel.app/)
 
-⭐ If you like this project, consider giving it a star on GitHub!!
+⭐ If you like this project, consider giving it a star on GitHub!!!
 
 ---
 
